@@ -13,7 +13,7 @@ fun main() {
 
     height = 100
     weight = 20F
-
+ 
     isChild = height<150 && weight<40F
     info = "$firstName $lastName $height $weight $isChild"
 
