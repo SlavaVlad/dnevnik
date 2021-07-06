@@ -23,7 +23,7 @@ fun solveEquation(a: Int, b: Int, c: Int): Double {
 //            println("""Дискриминант: $discriminant
 //x1 = $x1
 //x2 = $x2""")
-//для отладки, ибо пункты останова для слабаков
+// для отладки, ибо пункты останова для слабаков
 
             return x1 + x2
 
