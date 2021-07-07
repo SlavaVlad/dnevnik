@@ -4,7 +4,7 @@ import kotlin.math.sqrt
 
 fun main() {
 
-    val solutionSum = solveEquation(1, 9, 9)
+    val solutionSum = solveEquation(1, -6, 9)
 
     println(solutionSum) // сумма корней в консоль
 
