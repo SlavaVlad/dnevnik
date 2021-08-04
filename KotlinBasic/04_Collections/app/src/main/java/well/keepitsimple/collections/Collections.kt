@@ -35,7 +35,7 @@ fun main() {
     }
 
     for ((key, value) in phones){
-        println("Человек: "+key+". Номер телефона: "+value)
+        println("Человек: $key. Номер телефона: $value")
     }
 
 }
