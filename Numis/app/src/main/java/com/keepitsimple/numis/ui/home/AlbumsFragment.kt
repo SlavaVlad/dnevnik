@@ -1,20 +1,17 @@
-package com.keepitsimple.numis.ui.gallery
+package com.keepitsimple.numis.ui.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.keepitsimple.numis.R
-import com.keepitsimple.numis.databinding.FragmentListBinding
+import com.keepitsimple.numis.databinding.FragmentAlbumsBinding
 
-class GalleryFragment : Fragment() {
+class AlbumsFragment : Fragment() {
 
-    private lateinit var galleryViewModel: GalleryViewModel
-    private var _binding: FragmentListBinding? = null
+    private lateinit var albumsViewModel: AlbumsViewModel
+    private var _binding: FragmentAlbumsBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -25,12 +22,11 @@ class GalleryFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        galleryViewModel =
-            ViewModelProvider(this).get(GalleryViewModel::class.java)
+        albumsViewModel =
+            ViewModelProvider(this).get(AlbumsViewModel::class.java)
 
-        _binding = FragmentListBinding.inflate(inflater, container, false)
+        _binding = FragmentAlbumsBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
         return root
     }
 

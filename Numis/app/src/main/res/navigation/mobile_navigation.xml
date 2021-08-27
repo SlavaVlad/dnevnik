@@ -7,13 +7,13 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.keepitsimple.numis.ui.home.HomeFragment"
+        android:name="com.keepitsimple.numis.ui.home.AlbumsFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_list" />
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="com.keepitsimple.numis.ui.gallery.GalleryFragment"
+        android:name="com.keepitsimple.numis.ui.gallery.ListFragment"
         android:label="@string/menu_gallery"
         tools:layout="@layout/fragment_albums" />
 
