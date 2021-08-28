@@ -29,13 +29,24 @@
                 android:text="Предмет"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/cg_subject"
+            <HorizontalScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                app:singleLine="true"
-                app:singleSelection="true"/>
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical" >
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/cg_subject"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        app:singleLine="true"
+                        app:singleSelection="true" />
+                </LinearLayout>
+            </HorizontalScrollView>
 
             <TextView
                 android:id="@+id/tv_groups"
@@ -46,14 +57,26 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <com.google.android.material.chip.ChipGroup
+            <HorizontalScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="4dp"
-                app:singleLine="true"
-                app:singleSelection="true" >
+                android:layout_height="match_parent">
 
-            </com.google.android.material.chip.ChipGroup>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical" >
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/cg_target"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        app:singleLine="true"
+                        app:singleSelection="true">
+
+                    </com.google.android.material.chip.ChipGroup>
+                </LinearLayout>
+            </HorizontalScrollView>
 
             <TextView
                 android:id="@+id/textView2"
@@ -64,12 +87,42 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <com.google.android.material.chip.ChipGroup
+            <HorizontalScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="4dp">
+                android:layout_height="match_parent">
 
-            </com.google.android.material.chip.ChipGroup>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical" >
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/cg_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        app:singleSelection="true">
+
+                    </com.google.android.material.chip.ChipGroup>
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Дата сдачи"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <CalendarView
+                android:id="@+id/calendar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:maxDate="12/31/2030"
+                android:minDate="25/08/2020"
+                android:weekDayTextAppearance="@style/TextAppearance.AppCompat.Body2" />
 
             <TextView
                 android:id="@+id/textView5"
@@ -88,19 +141,16 @@
                 android:gravity="start|top"
                 android:inputType="textMultiLine|textAutoCorrect|textPersonName" />
 
-            <TextView
-                android:id="@+id/tv_tags"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Все теги"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/btn_complete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:enabled="false"
+                android:text="Создать уведомление" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="40dp" />
 
         </LinearLayout>
     </ScrollView>
