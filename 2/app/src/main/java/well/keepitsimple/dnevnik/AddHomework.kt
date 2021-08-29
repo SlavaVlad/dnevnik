@@ -1,13 +1,16 @@
 package well.keepitsimple.dnevnik
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.CalendarView
 import android.widget.EditText
+import android.widget.Toast
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import java.sql.Timestamp
@@ -90,8 +93,8 @@ class AddHomework : AppCompatActivity() {
 
     private fun addChips(document: DocumentSnapshot) {
 
-        var subjects: List<String> = document.get("subjects") as List<String>
-        var types: List<String> = document.get("typesofwork") as List<String>
+        val subjects: List<String> = document.get("subjects") as List<String>
+        val types: List<String> = document.get("typesofwork") as List<String>
 
         for (element in subjects) {
             val c = Chip(this)
@@ -116,7 +119,11 @@ class AddHomework : AppCompatActivity() {
             time = Timestamp(calendar.date)
             data["deadline"] = time!!
             data["text"] = et_text.text.toString()
-            db.collection("notifications").add(data)
+            db.collection("notifications").add(data).addOnCompleteListener {
+                val intent1 = Intent(this, MainActivity::class.java)
+                startActivity(intent1)
+                Toast.makeText(this, "Уведомление создано", Toast.LENGTH_SHORT).show()
+            }
         }
 
     }

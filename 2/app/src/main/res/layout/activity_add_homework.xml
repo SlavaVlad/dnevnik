@@ -121,7 +121,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:maxDate="12/31/2030"
-                android:minDate="25/08/2020"
+                android:minDate="25/08/2018"
                 android:weekDayTextAppearance="@style/TextAppearance.AppCompat.Body2" />
 
             <TextView
