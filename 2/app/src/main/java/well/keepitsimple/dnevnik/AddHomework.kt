@@ -24,7 +24,6 @@ class AddHomework : AppCompatActivity() {
     lateinit var btn_complete: Button
     lateinit var calendar: CalendarView
     lateinit var et_text: EditText
-    var tags = ArrayList<String>()
     var db = FirebaseFirestore.getInstance()
     val F = "Firebase"
     lateinit var globalDoc: DocumentSnapshot
@@ -80,9 +79,6 @@ class AddHomework : AppCompatActivity() {
 
                     Log.d(F, "DocumentSnapshot data: ${document.data}")
                 } else {
-
-
-
                     Log.d(F, "No such document")
                 }
             }
