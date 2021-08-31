@@ -6,6 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import androidx.core.graphics.drawable.toDrawable
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import well.keepitsimple.dnevnik.ui.tasks.TasksFragment
 
 class TasksAdapter (var ctx:Context, var ressource:Int, var item:ArrayList<TaskItem>): ArrayAdapter<TaskItem>(ctx,ressource,item){
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {

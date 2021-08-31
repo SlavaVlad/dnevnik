@@ -1,5 +1,6 @@
 package well.keepitsimple.dnevnik.ui.tasks
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,9 +11,9 @@ import androidx.fragment.app.Fragment
 import well.keepitsimple.dnevnik.R
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.Timestamp
+import well.keepitsimple.dnevnik.AddHomework
 import well.keepitsimple.dnevnik.TaskItem
 import well.keepitsimple.dnevnik.TasksAdapter
-import java.time.Instant
 
 
 class TasksFragment : Fragment() {
@@ -21,6 +22,8 @@ class TasksFragment : Fragment() {
     lateinit var lv_tasks: ListView
 
     val db = FirebaseFirestore.getInstance()
+
+    val tasks = ArrayList<TaskItem>() // динамический массив - список из полей документов в коллекции
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -42,18 +45,25 @@ class TasksFragment : Fragment() {
                     return@addSnapshotListener
                 }
 
-                val tasks = ArrayList<TaskItem>() // динамический массив - список из полей документов в коллекции
-                for (doc in value!!) { // проходим по каждому документы
-                    tasks.add(TaskItem(doc.getString("subject").toString(), "n days", doc.getString("text")!!))
+                    for (doc in value!!) { // проходим по каждому документу
+                        tasks.add(
+                            TaskItem
+                                (
+                                doc.getString("subject").toString(),
+                                getDeadlineInDays(doc.get("deadline") as Timestamp?).toString(),
+                                doc.getString("text")!!, doc.id
+                            )
+                        )
+                    }
+                    setList(tasks)
                 }
-                setList(tasks)
-            }
+
     }
 
     private fun getDeadlineInDays(timestamp: Timestamp?): Int {
-        val time = Instant.now().epochSecond
+        val time = System.currentTimeMillis()
         val doc_time = timestamp!!.seconds
-        return ((time - doc_time)/60/24).toInt()
+        return ((time - doc_time)/60/60/24).toInt()
     }
 
     private fun setList(list: ArrayList<TaskItem>) {
@@ -62,6 +72,17 @@ class TasksFragment : Fragment() {
 
         lv_tasks.adapter = tasksAdapter
 
+        lv_tasks.setOnItemClickListener { parent, view, position, id ->
+            openDoc(tasks[position].id)
+        }
+
+    }
+
+    fun openDoc(id: String) {
+        val intent_edit:Intent = Intent(requireActivity().applicationContext, AddHomework::class.java)
+            .putExtra("action", "edit")
+            .putExtra("id", id)
+        startActivity(intent_edit)
     }
 
 }

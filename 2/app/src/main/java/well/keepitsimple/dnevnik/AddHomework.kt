@@ -8,13 +8,13 @@ import android.widget.Button
 import android.widget.CalendarView
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import java.sql.Time
 import java.sql.Timestamp
-import java.time.Instant
-import java.util.*
 
 class AddHomework : AppCompatActivity() {
 
@@ -41,24 +41,65 @@ class AddHomework : AppCompatActivity() {
         calendar_i = findViewById(R.id.calendar)
         et_text = findViewById(R.id.et_text)
 
-        getTags()
+        calendar_i.minDate = System.currentTimeMillis()
 
-        cg_subject.setOnCheckedChangeListener { group, id ->
-            if (id != -1){addChipData(group, id)}
-        }
+        if (intent.getStringExtra("action") != "edit") {
 
-        cg_type.setOnCheckedChangeListener { group, id ->
-            if (id != -1){addChipData(group, id)}
+            cg_subject.setOnCheckedChangeListener { group, id ->
+                if (id != -1) {
+                    addChipData(group, id)
+                }
+            }
+
+            cg_type.setOnCheckedChangeListener { group, id ->
+                if (id != -1) {
+                    addChipData(group, id)
+                }
+            }
         }
 
         btn_complete.setOnClickListener {
-            complete()
+            if (gyear != null){
+                complete()
+            } else {
+                askUser()
+            }
+
         }
 
         calendar_i.setOnDateChangeListener { view, year, month, dayOfMonth ->
             gyear = year-1900
             gmonth = month
             gday = dayOfMonth
+        }
+
+        getTags()
+
+    }
+
+    private fun setDataFromDoc(id: String) {
+
+        db.collection("tasks").document(id).get().addOnSuccessListener {
+
+                cg_subject.setOnCheckedChangeListener { group, id ->
+                    if (id != -1) {
+                        addChipData(group, id)
+                    }
+                }
+                    cg_type.setOnCheckedChangeListener { group, id ->
+                        if (id != -1) {
+                        addChipData(group, id)
+                        }
+                    }
+
+            et_text.setText(it.getString("text").toString())
+
+            val time:com.google.firebase.Timestamp = it.getTimestamp("deadline")!!
+            calendar_i.date = time.seconds*1000
+            gyear = time.toDate().year
+            gmonth = time.toDate().month
+            gday = time.toDate().day
+
         }
 
     }
@@ -69,10 +110,13 @@ class AddHomework : AppCompatActivity() {
 
         if (group == cg_subject){
             data["subject"] = c.text.toString()
+            data["subject_id"] = c.id
         }
         if (group == cg_type){
             data["type"] = c.text.toString()
+            data["type_id"] = c.id
         }
+
     }
 
     private fun getTags() {
@@ -81,7 +125,6 @@ class AddHomework : AppCompatActivity() {
             .addOnSuccessListener { document ->
 
                 addChips(document)
-                globalDoc = document
 
             }
             .addOnFailureListener { exception ->
@@ -89,41 +132,108 @@ class AddHomework : AppCompatActivity() {
             }
     }
 
-    private fun addChips(document: DocumentSnapshot) {
+    private fun addChips(doc_tags: DocumentSnapshot) {
 
-        val subjects: List<String> = document.get("subjects") as List<String>
-        val types: List<String> = document.get("typesofwork") as List<String>
+        val subjects: List<String> = doc_tags.get("subjects") as List<String>
+        val types: List<String> = doc_tags.get("typesofwork") as List<String>
 
-        for (element in subjects) {
-            val c = Chip(this)
-            c.text = element
-            c.isCheckable = true
-            cg_subject.addView(c)
+        val check: HashMap<String, String> = hashMapOf()
+
+        if (intent.getStringExtra("action") == "edit") {
+            db.collection("tasks").document(intent.getStringExtra("id").toString()).get()
+                .addOnSuccessListener {
+                    check["subject"] = it.getString("subject").toString()
+                    check["type"] = it.getString("type").toString()
+
+                    for (element in subjects) {
+                        val c = Chip(this)
+                        c.text = element
+                        c.isCheckable = true
+                        cg_subject.addView(c)
+                        if (element == check["subject"]){
+                            c.isChecked = true
+                            data["subject"] = c.text.toString()
+                        }
+                    }
+
+                    for (element in types){
+                        val c = Chip(this)
+                        c.text = element
+                        c.isCheckable = true
+                        cg_type.addView(c)
+                        if (element == check["type"]){
+                            c.isChecked = true
+                            data["type"] = c.text.toString()
+                        }
+                    }
+
+                    btn_complete.isEnabled = true
+
+                    if (intent.getStringExtra("action") == "edit") {
+                        setDataFromDoc(intent.getStringExtra("id")!!)
+                    }
+                }
+
+        } else {
+
+            for (element in subjects) {
+                val c = Chip(this)
+                c.text = element
+                c.isCheckable = true
+                cg_subject.addView(c)
+            }
+
+            for (element in types){
+                val c = Chip(this)
+                c.text = element
+                c.isCheckable = true
+                cg_type.addView(c)
+            }
+
+            btn_complete.isEnabled = true
+
+            if (intent.getStringExtra("action") == "edit") {
+                setDataFromDoc(intent.getStringExtra("id")!!)
+            }
         }
-
-        for (element in types){
-            val c = Chip(this)
-            c.text = element
-            c.isCheckable = true
-            cg_type.addView(c)
-        }
-
-        btn_complete.isEnabled = true
 
     }
 
+    fun askUser(){
+        val builder = AlertDialog.Builder(this)
+        builder
+            .setTitle("Вы не выбрали дату. Дата будет установлена на текущую.")
+            .setCancelable(true)
+            .setPositiveButton("Ок"){ dialog, id ->
+                complete()
+            }
+            .setNegativeButton("Отмена"){ dialog, id ->
+            }
+            .show()
+    }
+
     private fun complete() {
-        if (et_text.text.toString() != "" && data.contains("subject") && data.contains("type")) {
-            if (gyear != null){
+
+        if (et_text.text.isNotBlank() && data.contains("subject") && data.contains("type")) {
+            if (gyear != null) {
                 data["deadline"] = Timestamp(gyear!!, gmonth!!, gday!!, 12, 0, 0, 0)
             } else {
                 data["deadline"] = Timestamp(System.currentTimeMillis())
             }
             data["text"] = et_text.text.toString()
-            db.collection("tasks").add(data).addOnCompleteListener {
-                val intent1 = Intent(this, MainActivity::class.java)
-                startActivity(intent1)
-                Toast.makeText(this, "Уведомление создано", Toast.LENGTH_SHORT).show()
+
+            if (intent.getStringExtra("action") != "edit") {
+                db.collection("tasks").add(data).addOnCompleteListener {
+                    val intent1 = Intent(this, MainActivity::class.java)
+                    startActivity(intent1)
+                    Toast.makeText(this, "Уведомление создано", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                db.collection("tasks").document(intent.getStringExtra("id")!!).update(data).addOnCompleteListener {
+                    val intent1 = Intent(this, MainActivity::class.java)
+                    startActivity(intent1)
+                    Toast.makeText(this, "Уведомление обновлено", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 

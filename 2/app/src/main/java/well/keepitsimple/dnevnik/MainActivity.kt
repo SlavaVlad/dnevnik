@@ -92,7 +92,6 @@ class MainActivity : AppCompatActivity() {
             uid = currentUser.uid
         }
     }
-
     private fun startFioDialog(uid: String) {
         val builder = AlertDialog.Builder(this)
         val inflater = layoutInflater
@@ -121,7 +120,6 @@ class MainActivity : AppCompatActivity() {
         }
         builder.show()
     }
-
     private fun signIn() {
         val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN)
@@ -144,7 +142,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential)
@@ -162,7 +159,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
     }
-
     private fun checkUserInDatabase(uid: String) {
 
         val docRef = db.collection("users").document(uid)
@@ -187,7 +183,6 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.main, menu)
         return true
     }
-
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
