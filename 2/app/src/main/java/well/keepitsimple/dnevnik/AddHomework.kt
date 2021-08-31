@@ -10,25 +10,25 @@ import android.widget.EditText
 import android.widget.Toast
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import java.sql.Timestamp
-import java.util.*
-import kotlin.collections.ArrayList
+import java.time.Instant
 
 class AddHomework : AppCompatActivity() {
 
+    var gyear: Int? = null
+    var gmonth: Int? = null
+    var gday: Int? = null
     lateinit var cg_subject: ChipGroup
     lateinit var cg_type: ChipGroup
     lateinit var btn_complete: Button
-    lateinit var calendar: CalendarView
+    lateinit var calendar_i: CalendarView
     lateinit var et_text: EditText
     var db = FirebaseFirestore.getInstance()
     val F = "Firebase"
     lateinit var globalDoc: DocumentSnapshot
     var data = hashMapOf<String, Any>()
-    var time: Timestamp? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +37,7 @@ class AddHomework : AppCompatActivity() {
         cg_subject = findViewById(R.id.cg_subject)
         cg_type = findViewById(R.id.cg_type)
         btn_complete = findViewById(R.id.btn_complete)
-        calendar = findViewById(R.id.calendar)
+        calendar_i = findViewById(R.id.calendar)
         et_text = findViewById(R.id.et_text)
 
         getTags()
@@ -52,6 +52,12 @@ class AddHomework : AppCompatActivity() {
 
         btn_complete.setOnClickListener {
             complete()
+        }
+
+        calendar_i.setOnDateChangeListener { view, year, month, dayOfMonth ->
+            gyear = year-1900
+            gmonth = month
+            gday = dayOfMonth
         }
 
     }
@@ -112,10 +118,13 @@ class AddHomework : AppCompatActivity() {
 
     private fun complete() {
         if (et_text.text.toString() != "" && data.contains("subject") && data.contains("type")) {
-            time = Timestamp(calendar.date)
-            data["deadline"] = time!!
+            if (gyear != null){
+                data["deadline"] = Timestamp(gyear!!, gmonth!!, gday!!, 12, 0, 0, 0)
+            } else {
+                data["deadline"] = Timestamp(Instant.now().epochSecond)
+            }
             data["text"] = et_text.text.toString()
-            db.collection("notifications").add(data).addOnCompleteListener {
+            db.collection("tasks").add(data).addOnCompleteListener {
                 val intent1 = Intent(this, MainActivity::class.java)
                 startActivity(intent1)
                 Toast.makeText(this, "Уведомление создано", Toast.LENGTH_SHORT).show()

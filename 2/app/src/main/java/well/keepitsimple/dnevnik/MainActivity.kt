@@ -22,6 +22,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import android.widget.ArrayAdapter
+
+
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -74,27 +78,6 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-        getTasks()
-
-    }
-
-    private fun getTasks() {
-        db.collection("notifications")
-            //.whereEqualTo("group", "-")
-            .addSnapshotListener { value, e ->
-                if (e != null) {
-                    Log.w(F, "Listen failed.", e)
-                    return@addSnapshotListener
-                }
-
-                val cities = ArrayList<String>()
-                for (doc in value!!) {
-                    doc.getString("name")?.let {
-                        cities.add(it)
-                    }
-                }
-                Log.d(F, "Current cites in CA: $cities")
-            }
     }
 
     // START LOGIN
