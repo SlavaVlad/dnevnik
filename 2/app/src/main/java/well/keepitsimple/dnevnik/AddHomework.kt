@@ -14,6 +14,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import java.sql.Timestamp
 import java.time.Instant
+import java.util.*
 
 class AddHomework : AppCompatActivity() {
 
@@ -78,15 +79,10 @@ class AddHomework : AppCompatActivity() {
         val docRef = db.collection("tags").document("tags")
         docRef.get()
             .addOnSuccessListener { document ->
-                if (document != null) {
 
-                    addChips(document)
-                    globalDoc = document
+                addChips(document)
+                globalDoc = document
 
-                    Log.d(F, "DocumentSnapshot data: ${document.data}")
-                } else {
-                    Log.d(F, "No such document")
-                }
             }
             .addOnFailureListener { exception ->
                 Log.d(F, "get failed with ", exception)
@@ -121,7 +117,7 @@ class AddHomework : AppCompatActivity() {
             if (gyear != null){
                 data["deadline"] = Timestamp(gyear!!, gmonth!!, gday!!, 12, 0, 0, 0)
             } else {
-                data["deadline"] = Timestamp(Instant.now().epochSecond)
+                data["deadline"] = Timestamp(System.currentTimeMillis())
             }
             data["text"] = et_text.text.toString()
             db.collection("tasks").add(data).addOnCompleteListener {
