@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import well.keepitsimple.dnevnik.R
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.core.Query
 import well.keepitsimple.dnevnik.AddHomework
 import well.keepitsimple.dnevnik.TaskItem
 import well.keepitsimple.dnevnik.TasksAdapter
@@ -37,7 +38,7 @@ class TasksFragment : Fragment() {
     }
 
     private fun getTasks() {
-        db.collection("tasks")
+        db.collection("tasks").orderBy("deadline")
             //.whereEqualTo("group", "-")
             .addSnapshotListener { value, e ->
                 if (e != null) {
@@ -46,14 +47,16 @@ class TasksFragment : Fragment() {
                 }
 
                     for (doc in value!!) { // проходим по каждому документу
-                        tasks.add(
-                            TaskItem
-                                (
-                                doc.getString("subject").toString(),
-                                getDeadlineInDays(doc.get("deadline") as Timestamp?).toString(),
-                                doc.getString("text")!!, doc.id
+                        if (getDeadlineInDays(doc.getTimestamp("deadline")) > -1) {
+                            tasks.add(
+                                TaskItem
+                                    (
+                                    doc.getString("subject").toString(),
+                                    (getDeadlineInDays(doc.getTimestamp("deadline"))),
+                                    doc.getString("text")!!, doc.id
+                                )
                             )
-                        )
+                        }
                     }
                     setList(tasks)
                 }
@@ -61,9 +64,9 @@ class TasksFragment : Fragment() {
     }
 
     private fun getDeadlineInDays(timestamp: Timestamp?): Int {
-        val time = System.currentTimeMillis()
+        val time = System.currentTimeMillis()/1000
         val doc_time = timestamp!!.seconds
-        return ((time - doc_time)/60/60/24).toInt()
+        return (((doc_time - time)/60/60/24).toInt())
     }
 
     private fun setList(list: ArrayList<TaskItem>) {

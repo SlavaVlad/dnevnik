@@ -56,6 +56,10 @@ apply plugin: 'com.android.application'
 // Add this line
 apply plugin: 'com.google.gms.google-services'
 
+apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
+    // Other plugins here if pre-existing
+
+
 
 dependencies {
     implementation 'com.google.firebase:firebase-firestore-ktx:23.0.3'
@@ -70,6 +74,8 @@ dependencies {
 
     // Add the dependencies for any other desired Firebase products
     // https://firebase.google.com/docs/android/setup#available-libraries
+
+    implementation 'com.onesignal:OneSignal:[4.0.0, 4.99.99]'
 }
 
 apply plugin: 'com.android.application'
@@ -77,6 +83,7 @@ apply plugin: 'com.android.application'
 dependencies {
 
 
+    implementation 'androidx.work:work-runtime-ktx:2.5.0'
     implementation 'com.google.firebase:firebase-auth-ktx:21.0.1'
     implementation 'com.google.android.gms:play-services-base:17.6.0'
     implementation 'androidx.annotation:annotation:1.2.0'

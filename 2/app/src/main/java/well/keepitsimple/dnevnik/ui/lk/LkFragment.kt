@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.RadioGroup
 import androidx.fragment.app.Fragment
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import well.keepitsimple.dnevnik.MainActivity
 import well.keepitsimple.dnevnik.R
@@ -16,6 +18,7 @@ class LkFragment : Fragment() {
     lateinit var et_last_name: EditText
     lateinit var et_name: EditText
     lateinit var et_patronymic: EditText
+    lateinit var rg_student: RadioGroup
 
     val F: String = "Firebase"
     val db = FirebaseFirestore.getInstance()
@@ -23,15 +26,16 @@ class LkFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
 
-        val activity: MainActivity? = activity as MainActivity?
-        val uid: String? = activity!!.uid
-        getData(uid!!)
-
         val view = inflater.inflate(R.layout.fragment_lk, container, false)
 
         et_last_name = view.findViewById(R.id.et_last_name)
         et_name = view.findViewById(R.id.et_name)
         et_patronymic = view.findViewById(R.id.et_patronymic)
+        rg_student = view.findViewById(R.id.rg_student)
+
+        val activity: MainActivity? = activity as MainActivity?
+        val uid: String? = activity!!.uid
+        getData(uid!!)
 
         return view
 
@@ -41,12 +45,16 @@ class LkFragment : Fragment() {
         val docRef = db.collection("users").document(uid)
         docRef.get()
             .addOnSuccessListener { doc ->
-                et_last_name.setText(doc.getString("last_name"))
-                et_name.setText(doc.getString("name"))
-                et_patronymic.setText(doc.getString("patronymic"))
+                setCabinet(doc)
             }
             .addOnFailureListener { exception ->
                 Log.d(F, "get failed with ", exception)
             }
+    }
+
+    private fun setCabinet(doc: DocumentSnapshot) {
+        et_last_name.setText(doc.getString("last_name"))
+        et_name.setText(doc.getString("name"))
+        et_patronymic.setText(doc.getString("patronymic"))
     }
 }

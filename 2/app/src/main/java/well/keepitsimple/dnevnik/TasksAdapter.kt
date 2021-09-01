@@ -1,6 +1,9 @@
 package well.keepitsimple.dnevnik
 
 import android.content.Context
+import android.content.res.ColorStateList
+import android.content.res.XmlResourceParser
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,8 +23,13 @@ class TasksAdapter (var ctx:Context, var ressource:Int, var item:ArrayList<TaskI
         val text = view.findViewById<TextView>(R.id.i_text)
 
         subject.text = item[position].subject
-        deadline.text = item[position].deadline
         text.text = item[position].text
+        if (item[position].deadline >= 1){
+            deadline.text = ("Сдача через: " + item[position].deadline.toString() + "дн.")
+        } else {
+            deadline.setTextColor(context.getColor(R.color.design_default_color_error))
+            deadline.text = "Сдача сегодня!"
+        }
 
         return view
     }
