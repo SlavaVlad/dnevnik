@@ -24,12 +24,13 @@ class TasksAdapter (var ctx:Context, var ressource:Int, var item:ArrayList<TaskI
 
         subject.text = item[position].subject
         text.text = item[position].text
-        if (item[position].deadline >= 1){
-            deadline.text = ("Сдача через: " + item[position].deadline.toString() + "дн.")
-        } else {
-            deadline.setTextColor(context.getColor(R.color.design_default_color_error))
-            deadline.text = "Сдача сегодня!"
-        }
+        deadline.text = (item[position].deadline).toString()
+        //if (item[position].deadline >= 1){
+        //    deadline.text = ("Сдача через: " + (item[position].deadline).toString() + "дн.")
+        //} else {
+        //    deadline.setTextColor(context.getColor(R.color.design_default_color_error))
+        //    deadline.text = "Сдача сегодня!"
+        //}
 
         return view
     }

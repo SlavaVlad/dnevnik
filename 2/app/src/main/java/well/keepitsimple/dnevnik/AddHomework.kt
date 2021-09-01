@@ -28,11 +28,10 @@ class AddHomework : AppCompatActivity() {
     lateinit var et_text: EditText
     var db = FirebaseFirestore.getInstance()
     val F = "Firebase"
-    lateinit var globalDoc: DocumentSnapshot
     var data = hashMapOf<String, Any>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onStart() {
+        super.onStart()
         setContentView(R.layout.activity_add_homework)
 
         cg_subject = findViewById(R.id.cg_subject)
@@ -216,7 +215,7 @@ class AddHomework : AppCompatActivity() {
 
         if (et_text.text.isNotBlank() && data.contains("subject") && data.contains("type")) {
             if (gyear != null) {
-                data["deadline"] = Timestamp(gyear!!, gmonth!!, gday!!, 12, 0, 0, 0)
+                data["deadline"] = Timestamp(gyear!!, gmonth!!, gday!!, 0, 0, 0, 0)
             } else {
                 data["deadline"] = Timestamp(System.currentTimeMillis())
             }

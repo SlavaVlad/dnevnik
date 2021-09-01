@@ -23,9 +23,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import android.widget.ArrayAdapter
-
-
-
+import com.google.firebase.firestore.DocumentSnapshot
 
 
 class MainActivity : AppCompatActivity() {
@@ -36,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private val RC_SIGN_IN: Int = 123
 
     var uid: String? = null
+    val user_doc: DocumentSnapshot? = null
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
@@ -90,6 +89,9 @@ class MainActivity : AppCompatActivity() {
         } else {
             checkUserInDatabase(currentUser.uid)
             uid = currentUser.uid
+            db.collection("users").document(uid.toString()).get().addOnSuccessListener {
+
+            }
         }
     }
     private fun startFioDialog(uid: String) {

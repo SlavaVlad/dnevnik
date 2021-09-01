@@ -11,10 +11,11 @@ import androidx.fragment.app.Fragment
 import well.keepitsimple.dnevnik.R
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.core.Query
 import well.keepitsimple.dnevnik.AddHomework
 import well.keepitsimple.dnevnik.TaskItem
 import well.keepitsimple.dnevnik.TasksAdapter
+import java.math.RoundingMode
+import java.text.DecimalFormat
 
 
 class TasksFragment : Fragment() {
@@ -63,10 +64,16 @@ class TasksFragment : Fragment() {
 
     }
 
-    private fun getDeadlineInDays(timestamp: Timestamp?): Int {
+    private fun getDeadlineInDays(timestamp: Timestamp?): Long {
         val time = System.currentTimeMillis()/1000
         val doc_time = timestamp!!.seconds
-        return (((doc_time - time)/60/60/24).toInt())
+        return ((doc_time - time)/60/60/24)
+    }
+
+    private fun roundOffDouble(number: Double): Double {
+        val df = DecimalFormat("#.##")
+        df.roundingMode = RoundingMode.FLOOR
+        return df.format(number).toDouble()
     }
 
     private fun setList(list: ArrayList<TaskItem>) {
