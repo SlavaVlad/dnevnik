@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.Fragment
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.Timestamp
@@ -54,13 +56,13 @@ class TasksFragment : Fragment() {
                 }
 
                     for (doc in value!!) { // проходим по каждому документу
-                        if (getDeadlineInDays(doc.getTimestamp("deadline")) > 0 && !tasks.contains(TaskItem(doc.getString("subject").toString(), (getDeadlineInDays(doc.getTimestamp("deadline"))), doc.getString("text")!!, doc.id, doc.getString("type")!!))) {
+                        if (getDeadlineInDays(doc.getTimestamp("deadline")) > 0 && !tasks.contains(TaskItem(doc.getString("subject").toString(), (getDeadlineInDays(doc.getTimestamp("deadline"))), doc.getString("text")!!, doc.id, doc, doc.getString("type")!!))) {
                             tasks.add(
                                 TaskItem
                                     (
                                     doc.getString("subject").toString(),
                                     (getDeadlineInDays(doc.getTimestamp("deadline"))),
-                                    doc.getString("text")!!, doc.id, doc.getString("type")!!
+                                    doc.getString("text")!!, doc.id, doc, doc.getString("type")!!
                                 )
                             )
                         }
@@ -86,7 +88,7 @@ class TasksFragment : Fragment() {
 
     }
 
-    private fun openDoc(id: String) {
+    fun openDoc(id: String) {
         val intent_edit:Intent = Intent(requireContext().applicationContext, AddHomework::class.java)
             .putExtra("action", "edit")
             .putExtra("id", id)
