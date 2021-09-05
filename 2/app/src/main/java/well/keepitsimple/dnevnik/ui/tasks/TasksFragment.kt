@@ -8,27 +8,33 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
-import well.keepitsimple.dnevnik.R
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.Timestamp
-import well.keepitsimple.dnevnik.AddHomework
-import well.keepitsimple.dnevnik.TaskItem
-import well.keepitsimple.dnevnik.TasksAdapter
+import kotlinx.coroutines.MainScope
+import well.keepitsimple.dnevnik.*
 import java.math.RoundingMode
 import java.text.DecimalFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.math.ceil
+import kotlin.math.round
 
 
 class TasksFragment : Fragment() {
 
     val F = "Firebase"
-    lateinit var lv_tasks: ListView
+    private lateinit var lv_tasks: ListView
 
-    val db = FirebaseFirestore.getInstance()
+    private val db = FirebaseFirestore.getInstance()
 
-    val tasks = ArrayList<TaskItem>() // динамический массив - список из полей документов в коллекции
+    private val tasks = ArrayList<TaskItem>() // динамический массив - список из полей документов в коллекции
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
+
         val view = inflater.inflate(R.layout.fragment_tasks, container, false)
 
         lv_tasks = view.findViewById(R.id.lv_tasks)
@@ -48,13 +54,13 @@ class TasksFragment : Fragment() {
                 }
 
                     for (doc in value!!) { // проходим по каждому документу
-                        if (getDeadlineInDays(doc.getTimestamp("deadline")) > -1) {
+                        if (getDeadlineInDays(doc.getTimestamp("deadline")) > 0 && !tasks.contains(TaskItem(doc.getString("subject").toString(), (getDeadlineInDays(doc.getTimestamp("deadline"))), doc.getString("text")!!, doc.id, doc.getString("type")!!))) {
                             tasks.add(
                                 TaskItem
                                     (
                                     doc.getString("subject").toString(),
                                     (getDeadlineInDays(doc.getTimestamp("deadline"))),
-                                    doc.getString("text")!!, doc.id
+                                    doc.getString("text")!!, doc.id, doc.getString("type")!!
                                 )
                             )
                         }
@@ -64,21 +70,13 @@ class TasksFragment : Fragment() {
 
     }
 
-    private fun getDeadlineInDays(timestamp: Timestamp?): Long {
-        val time = System.currentTimeMillis()/1000
-        val doc_time = timestamp!!.seconds
-        return ((doc_time - time)/60/60/24)
-    }
-
-    private fun roundOffDouble(number: Double): Double {
-        val df = DecimalFormat("#.##")
-        df.roundingMode = RoundingMode.FLOOR
-        return df.format(number).toDouble()
+    private fun getDeadlineInDays(timestamp: Timestamp?): Double {
+        return ceil(((timestamp!!.seconds.toDouble()) - System.currentTimeMillis() / 1000) / 86400)
     }
 
     private fun setList(list: ArrayList<TaskItem>) {
 
-        val tasksAdapter = TasksAdapter(requireActivity().baseContext, R.layout.task_item_layout, list)
+        val tasksAdapter = TasksAdapter(requireContext().applicationContext, R.layout.task_item_layout, list)
 
         lv_tasks.adapter = tasksAdapter
 
@@ -88,8 +86,8 @@ class TasksFragment : Fragment() {
 
     }
 
-    fun openDoc(id: String) {
-        val intent_edit:Intent = Intent(requireActivity().applicationContext, AddHomework::class.java)
+    private fun openDoc(id: String) {
+        val intent_edit:Intent = Intent(requireContext().applicationContext, AddHomework::class.java)
             .putExtra("action", "edit")
             .putExtra("id", id)
         startActivity(intent_edit)

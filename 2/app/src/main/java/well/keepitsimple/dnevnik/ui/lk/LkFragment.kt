@@ -28,9 +28,6 @@ class LkFragment : Fragment() {
 
         val view = inflater.inflate(R.layout.fragment_lk, container, false)
 
-        et_last_name = view.findViewById(R.id.et_last_name)
-        et_name = view.findViewById(R.id.et_name)
-        et_patronymic = view.findViewById(R.id.et_patronymic)
         rg_student = view.findViewById(R.id.rg_student)
 
         val activity: MainActivity? = activity as MainActivity?
@@ -53,8 +50,6 @@ class LkFragment : Fragment() {
     }
 
     private fun setCabinet(doc: DocumentSnapshot) {
-        et_last_name.setText(doc.getString("last_name"))
-        et_name.setText(doc.getString("name"))
-        et_patronymic.setText(doc.getString("patronymic"))
+
     }
 }

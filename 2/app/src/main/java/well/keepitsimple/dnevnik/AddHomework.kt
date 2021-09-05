@@ -13,6 +13,9 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Delay
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.delay
 import java.sql.Time
 import java.sql.Timestamp
 
@@ -30,6 +33,7 @@ class AddHomework : AppCompatActivity() {
     val F = "Firebase"
     var data = hashMapOf<String, Any>()
 
+    @InternalCoroutinesApi
     override fun onStart() {
         super.onStart()
         setContentView(R.layout.activity_add_homework)
@@ -58,12 +62,7 @@ class AddHomework : AppCompatActivity() {
         }
 
         btn_complete.setOnClickListener {
-            if (gyear != null){
                 complete()
-            } else {
-                askUser()
-            }
-
         }
 
         calendar_i.setOnDateChangeListener { view, year, month, dayOfMonth ->
@@ -105,18 +104,21 @@ class AddHomework : AppCompatActivity() {
 
     private fun addChipData(group: ChipGroup?, id: Int) {
 
-        val c:Chip = findViewById(id)
+        val c: Chip = findViewById(id)
 
-        if (group == cg_subject){
+        if (group == cg_subject) {
             data["subject"] = c.text.toString()
             data["subject_id"] = c.id
         }
-        if (group == cg_type){
+        if (group == cg_type) {
             data["type"] = c.text.toString()
             data["type_id"] = c.id
         }
 
+        btn_complete.isEnabled =
+            !(et_text.text.isBlank() && !data.contains("subject") && !data.contains("type"))
     }
+
 
     private fun getTags() {
         val docRef = db.collection("tags").document("tags")
@@ -189,8 +191,6 @@ class AddHomework : AppCompatActivity() {
                 cg_type.addView(c)
             }
 
-            btn_complete.isEnabled = true
-
             if (intent.getStringExtra("action") == "edit") {
                 setDataFromDoc(intent.getStringExtra("id")!!)
             }
@@ -198,22 +198,19 @@ class AddHomework : AppCompatActivity() {
 
     }
 
-    fun askUser(){
+    private fun alert(title: String, btn: String, message: String){
         val builder = AlertDialog.Builder(this)
         builder
-            .setTitle("Вы не выбрали дату. Дата будет установлена на текущую.")
+            .setTitle(title)
+            .setMessage(message)
             .setCancelable(true)
-            .setPositiveButton("Ок"){ dialog, id ->
-                complete()
-            }
-            .setNegativeButton("Отмена"){ dialog, id ->
+            .setNeutralButton(btn){ dialog, id ->
+
             }
             .show()
     }
 
     private fun complete() {
-
-        if (et_text.text.isNotBlank() && data.contains("subject") && data.contains("type")) {
             if (gyear != null) {
                 data["deadline"] = Timestamp(gyear!!, gmonth!!, gday!!, 0, 0, 0, 0)
             } else {
@@ -221,21 +218,26 @@ class AddHomework : AppCompatActivity() {
             }
             data["text"] = et_text.text.toString()
 
+            btn_complete.isEnabled = false
+
             if (intent.getStringExtra("action") != "edit") {
                 db.collection("tasks").add(data).addOnCompleteListener {
                     val intent1 = Intent(this, MainActivity::class.java)
                     startActivity(intent1)
                     Toast.makeText(this, "Уведомление создано", Toast.LENGTH_SHORT).show()
+                }.addOnFailureListener {
+                    btn_complete.isEnabled = true
                 }
             } else {
                 db.collection("tasks").document(intent.getStringExtra("id")!!).update(data).addOnCompleteListener {
                     val intent1 = Intent(this, MainActivity::class.java)
                     startActivity(intent1)
                     Toast.makeText(this, "Уведомление обновлено", Toast.LENGTH_SHORT).show()
+                }.addOnFailureListener {
+                    btn_complete.isEnabled = true
+
                 }
             }
-        }
-
     }
 
 }

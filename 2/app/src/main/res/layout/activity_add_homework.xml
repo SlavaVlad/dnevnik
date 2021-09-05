@@ -107,9 +107,9 @@
             <EditText
                 android:id="@+id/et_text"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:ems="10"
+                android:ems="16"
                 android:gravity="start|top"
                 android:inputType="textMultiLine|textAutoCorrect|textPersonName" />
 

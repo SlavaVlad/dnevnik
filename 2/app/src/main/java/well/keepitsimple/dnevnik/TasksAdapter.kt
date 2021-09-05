@@ -21,16 +21,32 @@ class TasksAdapter (var ctx:Context, var ressource:Int, var item:ArrayList<TaskI
         val subject = view.findViewById<TextView>(R.id.i_subject)
         val deadline = view.findViewById<TextView>(R.id.i_deadline)
         val text = view.findViewById<TextView>(R.id.i_text)
+        val type = view.findViewById<TextView>(R.id.i_type)
 
         subject.text = item[position].subject
+        subject.setTextColor(context.getColor(R.color.design_default_color_secondary_variant))
+
+        type.text = item[position].type
+        type.setTextColor(context.getColor(R.color.design_default_color_secondary_variant))
+
         text.text = item[position].text
-        deadline.text = (item[position].deadline).toString()
-        //if (item[position].deadline >= 1){
-        //    deadline.text = ("Сдача через: " + (item[position].deadline).toString() + "дн.")
-        //} else {
-        //    deadline.setTextColor(context.getColor(R.color.design_default_color_error))
-        //    deadline.text = "Сдача сегодня!"
-        //}
+        text.setTextColor(context.getColor(R.color.design_default_color_secondary))
+
+
+        when (item[position].deadline){
+            1.0 -> {// deadline = 0 -> сдача завтра
+                deadline.text = "Сдача завтра"
+                deadline.setTextColor(context.getColor(R.color.colorAccent))
+            }
+            //0.0 -> {// deadline = 1 -> сегодня
+            //    deadline.text = "Сдача сегодня"
+            //    deadline.setTextColor(context.getColor(R.color.colorAccent))
+            //}
+            else -> {// deadline > 1 -> Сдача через Н дней
+                deadline.text = ("Сдача через: " + (item[position].deadline).toInt().toString() + " дн.")
+                deadline.setTextColor(context.getColor(R.color.design_default_color_secondary))
+            }
+        }
 
         return view
     }

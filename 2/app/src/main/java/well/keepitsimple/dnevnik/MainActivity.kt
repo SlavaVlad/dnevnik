@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -23,7 +24,19 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import android.widget.ArrayAdapter
+import android.widget.Button
+import androidx.work.*
 import com.google.firebase.firestore.DocumentSnapshot
+import java.sql.Time
+import java.sql.Timestamp
+import java.time.Instant
+import java.time.Period
+import java.util.*
+import java.util.concurrent.TimeUnit
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
+import kotlin.time.nanoseconds
+import kotlin.time.seconds
 
 
 class MainActivity : AppCompatActivity() {
@@ -76,7 +89,6 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-
     }
 
     // START LOGIN
@@ -89,11 +101,9 @@ class MainActivity : AppCompatActivity() {
         } else {
             checkUserInDatabase(currentUser.uid)
             uid = currentUser.uid
-            db.collection("users").document(uid.toString()).get().addOnSuccessListener {
-
-            }
         }
     }
+
     private fun startFioDialog(uid: String) {
         val builder = AlertDialog.Builder(this)
         val inflater = layoutInflater
@@ -168,9 +178,9 @@ class MainActivity : AppCompatActivity() {
                 .addOnSuccessListener { document ->
                     if (document.exists()){
                         Log.w(F, "Ты есть в базе")
-                    } else {
-                        startFioDialog(uid)
-                    }
+                    } /*else {
+                         запрос дополнительной инфы по новому юзеру. НЕ ЗАБЫВАЕМ ПРО ФЗ-152, БАЗА НЕ В РОССИИ!!
+                    }*/
                 }
                 .addOnFailureListener { exception ->
                     Log.w(F, "Error getting documents: ", exception)

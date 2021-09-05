@@ -50,6 +50,13 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    // Import the BoM for the Firebase platform
+    implementation platform('com.google.firebase:firebase-bom:28.4.0')
+
+    // Declare the dependencies for the Crashlytics and Analytics libraries
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
 }
 
 apply plugin: 'com.android.application'
@@ -59,12 +66,16 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
     // Other plugins here if pre-existing
 
+// Apply the Crashlytics Gradle plugin
+apply plugin: 'com.google.firebase.crashlytics'
+
 
 
 dependencies {
     implementation 'com.google.firebase:firebase-firestore-ktx:23.0.3'
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:28.4.0')
+    implementation 'com.google.android.gms:play-services-analytics:17.0.1'
 
 
     // Add the dependency for the Firebase SDK for Google Analytics
@@ -76,6 +87,10 @@ dependencies {
     // https://firebase.google.com/docs/android/setup#available-libraries
 
     implementation 'com.onesignal:OneSignal:[4.0.0, 4.99.99]'
+
+    // Declare the dependencies for the Crashlytics and Analytics libraries
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+
 }
 
 apply plugin: 'com.android.application'
