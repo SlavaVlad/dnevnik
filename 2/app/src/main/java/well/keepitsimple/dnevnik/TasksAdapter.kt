@@ -23,18 +23,20 @@ class TasksAdapter (var ctx:Context, var ressource:Int, var item:ArrayList<TaskI
         val layoutInflater = LayoutInflater.from(ctx)
         val view = layoutInflater.inflate(ressource, null)
 
+        val item_doc = item[position].doc
+
         val subject = view.findViewById<TextView>(R.id.i_subject)
         val deadline = view.findViewById<TextView>(R.id.i_deadline)
         val text = view.findViewById<TextView>(R.id.i_text)
         val type = view.findViewById<TextView>(R.id.i_type)
 
-        subject.text = item[position].subject
+        subject.text = item_doc.getString("subject")
         subject.setTextColor(context.getColor(R.color.design_default_color_primary_variant))
 
-        type.text = item[position].type
+        type.text = item_doc.getString("type")
         type.setTextColor(context.getColor(R.color.design_default_color_primary))
 
-        text.text = item[position].text
+        text.text = item_doc.getString("text")
         text.setTextColor(context.getColor(R.color.design_default_color_primary_dark))
 
         when (item[position].deadline){

@@ -198,18 +198,6 @@ class AddHomework : AppCompatActivity() {
 
     }
 
-    private fun alert(title: String, btn: String, message: String){
-        val builder = AlertDialog.Builder(this)
-        builder
-            .setTitle(title)
-            .setMessage(message)
-            .setCancelable(true)
-            .setNeutralButton(btn){ dialog, id ->
-
-            }
-            .show()
-    }
-
     private fun complete() {
             if (gyear != null) {
                 data["deadline"] = Timestamp(gyear!!, gmonth!!, gday!!, 0, 0, 0, 0)

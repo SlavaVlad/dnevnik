@@ -96,22 +96,23 @@
                 </com.google.android.material.chip.ChipGroup>
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/textView5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Текст"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/filledTextField1"
 
-            <EditText
-                android:id="@+id/et_text"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:ems="16"
-                android:gravity="start|top"
-                android:inputType="textMultiLine|textAutoCorrect|textPersonName" />
+                android:hint="Текст">
+
+                <!--this is the actual edit text which takes the input-->
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine|textAutoCorrect|textPersonName"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
                 android:id="@+id/textView3"

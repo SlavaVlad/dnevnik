@@ -4,8 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
-import android.view.ViewGroup
-import android.widget.EditText
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
@@ -23,20 +22,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import android.widget.ArrayAdapter
-import android.widget.Button
 import androidx.work.*
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentSnapshot
-import java.sql.Time
-import java.sql.Timestamp
-import java.time.Instant
-import java.time.Period
 import java.util.*
-import java.util.concurrent.TimeUnit
-import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
-import kotlin.time.nanoseconds
-import kotlin.time.seconds
 
 
 class MainActivity : AppCompatActivity() {
@@ -46,8 +35,7 @@ class MainActivity : AppCompatActivity() {
     val F: String = "Firebase"
     private val RC_SIGN_IN: Int = 123
 
-    var uid: String? = null
-    val user_doc: DocumentSnapshot? = null
+    var uid:String? = null
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
@@ -84,7 +72,7 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow
+                R.id.nav_tasks, R.id.nav_lk, R.id.nav_settings, R.id.nav_timetables
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -99,39 +87,22 @@ class MainActivity : AppCompatActivity() {
         if ( currentUser == null) {
             signIn()
         } else {
-            checkUserInDatabase(currentUser.uid)
             uid = currentUser.uid
+            checkUserInDatabase(currentUser)
         }
     }
 
-    private fun startFioDialog(uid: String) {
+    fun alert(title: String, btn: String, message: String){
         val builder = AlertDialog.Builder(this)
-        val inflater = layoutInflater
-        builder.setTitle("В базе вас нет :(")
-        val dialogLayout = inflater.inflate(R.layout.alert_dialog_fio, null)
-        val editText1 = dialogLayout.findViewById<EditText>(R.id.d_et_last_name)
-        val editText2 = dialogLayout.findViewById<EditText>(R.id.d_et_name)
-        val editText3 = dialogLayout.findViewById<EditText>(R.id.d_et_patronymic)
-        builder.setView(dialogLayout)
-        builder.setPositiveButton("OK") { dialogInterface, i ->
-            if (editText1.text.toString() != "" && editText2.text.toString() != "" && editText3.text.toString() != "") {
-
-                val data = hashMapOf(
-                    "last_name" to editText1.text.toString(),
-                    "name" to editText2.text.toString(),
-                    "patronymic" to editText3.text.toString()
-                )
-
-                db.collection("users").document(uid).set(data)
-
-                this.uid = uid
-
-            } else {
-                startFioDialog(uid)
+        builder
+            .setTitle(title)
+            .setMessage(message)
+            .setCancelable(true)
+            .setNeutralButton(btn){ dialog, id ->
             }
-        }
-        builder.show()
+            .show()
     }
+
     private fun signIn() {
         val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN)
@@ -162,8 +133,9 @@ class MainActivity : AppCompatActivity() {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(F, "signInWithCredential:success")
                     val user = auth.currentUser
+                    uid = auth.currentUser!!.uid
 
-                        checkUserInDatabase(user!!.uid)
+                        checkUserInDatabase(user!!)
 
                 } else {
                     // If sign in fails, display a message to the user.
@@ -171,22 +143,33 @@ class MainActivity : AppCompatActivity() {
                 }
             }
     }
-    private fun checkUserInDatabase(uid: String) {
+    private fun checkUserInDatabase(user: FirebaseUser) {
 
-        val docRef = db.collection("users").document(uid)
-        docRef.get()
-                .addOnSuccessListener { document ->
-                    if (document.exists()){
-                        Log.w(F, "Ты есть в базе")
-                    } /*else {
-                         запрос дополнительной инфы по новому юзеру. НЕ ЗАБЫВАЕМ ПРО ФЗ-152, БАЗА НЕ В РОССИИ!!
-                    }*/
-                }
-                .addOnFailureListener { exception ->
-                    Log.w(F, "Error getting documents: ", exception)
+        db.collection("users").document(user.uid).addSnapshotListener { doc, error ->
+            if (doc != null) {
+
+                Log.w(F, "Ты есть в базе")
+
+                if (!doc.getBoolean("isStudent")!! || doc.getBoolean("isAdmin")!!) {
+                    binding.appBarMain.fab.visibility = View.VISIBLE
                 }
 
+            } else {
 
+                val data = hashMapOf<String, Any>(
+                    "isStudent" to true,
+                    "isAdmin" to false,
+                    "email" to user.email!!
+                )
+
+                val docRef = db.collection("users").document(user.uid)
+                docRef.set(data).addOnSuccessListener {
+                    Log.w(F, "User data write successfully")
+                }.addOnFailureListener {
+                    Log.w(F, "Error writing user data - ${it.message}")
+                }
+            }
+        }
     }
     // END LOGIN
 

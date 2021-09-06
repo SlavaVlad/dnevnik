@@ -7,22 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.Fragment
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.Timestamp
-import kotlinx.coroutines.MainScope
 import well.keepitsimple.dnevnik.*
-import java.math.RoundingMode
-import java.text.DecimalFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.ceil
-import kotlin.math.round
 
 
 class TasksFragment : Fragment() {
@@ -33,6 +24,7 @@ class TasksFragment : Fragment() {
     private val db = FirebaseFirestore.getInstance()
 
     private val tasks = ArrayList<TaskItem>() // динамический массив - список из полей документов в коллекции
+    lateinit var MActivity: MainActivity
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -42,6 +34,8 @@ class TasksFragment : Fragment() {
         lv_tasks = view.findViewById(R.id.lv_tasks)
 
         getTasks()
+
+         MActivity = activity as MainActivity
 
         return view
     }
@@ -56,14 +50,10 @@ class TasksFragment : Fragment() {
                 }
 
                     for (doc in value!!) { // проходим по каждому документу
-                        if (getDeadlineInDays(doc.getTimestamp("deadline")) > 0 && !tasks.contains(TaskItem(doc.getString("subject").toString(), (getDeadlineInDays(doc.getTimestamp("deadline"))), doc.getString("text")!!, doc.id, doc, doc.getString("type")!!))) {
+                        if (getDeadlineInDays(doc.getTimestamp("deadline")) > -1 && !tasks.contains(TaskItem((getDeadlineInDays(doc.getTimestamp("deadline"))), doc))) {
                             tasks.add(
                                 TaskItem
-                                    (
-                                    doc.getString("subject").toString(),
-                                    (getDeadlineInDays(doc.getTimestamp("deadline"))),
-                                    doc.getString("text")!!, doc.id, doc, doc.getString("type")!!
-                                )
+                                    ((getDeadlineInDays(doc.getTimestamp("deadline"))), doc)
                             )
                         }
                     }
@@ -80,15 +70,21 @@ class TasksFragment : Fragment() {
 
         val tasksAdapter = TasksAdapter(requireContext().applicationContext, R.layout.task_item_layout, list)
 
-        lv_tasks.adapter = tasksAdapter
+        db.collection("tasks").document(MActivity.uid!!).get().addOnSuccessListener {
 
-        lv_tasks.setOnItemClickListener { parent, view, position, id ->
-            openDoc(tasks[position].id)
+            lv_tasks.adapter = tasksAdapter
+
+            if(!it.getBoolean("isStudent")!! || it.getBoolean("isAdmin")!!) {
+                lv_tasks.setOnItemClickListener { parent, view, position, id ->
+                    openDoc(tasks[position].doc.id)
+                }
+            }
+
         }
 
     }
 
-    fun openDoc(id: String) {
+    private fun openDoc(id: String) {
         val intent_edit:Intent = Intent(requireContext().applicationContext, AddHomework::class.java)
             .putExtra("action", "edit")
             .putExtra("id", id)
